@@ -18,7 +18,6 @@ int main(int argc, char* argv[]) {
 
     switch (method) {
 
-        // Метод 1
     case 1:
 #pragma omp parallel
     {
@@ -34,25 +33,7 @@ int main(int argc, char* argv[]) {
     }
     break;
 
-    // Метод 2
     case 2:
-#pragma omp parallel
-    {
-        int tid = omp_get_thread_num();
-        for (int i = num_threads - 1; i >= 0; i--) {
-#pragma omp barrier
-            if (tid == i) {
-#pragma omp critical
-                {
-                    std::cout << "Thread " << tid << " of " << num_threads << std::endl << std::flush;
-                }
-            }
-        }
-    }
-    break;
-
-    // Метод 3
-    case 3:
 #pragma omp parallel
     {
 #pragma omp single
@@ -65,36 +46,7 @@ int main(int argc, char* argv[]) {
     }
     break;
 
-    // Метод 4
-    case 4:
-    {
-        int next = num_threads - 1;
-#pragma omp parallel shared(next)
-        {
-            int tid = omp_get_thread_num();
-            while (true) {
-                bool should_print = false;
-#pragma omp critical
-                {
-                    if (next == tid) {
-                        should_print = true;
-                        next--;
-                    }
-                }
-                if (should_print) {
-#pragma omp critical
-                    {
-                        std::cout << "Thread " << tid << " of " << num_threads << std::endl << std::flush;
-                    }
-                }
-                if (next < 0) break;
-            }
-        }
-        break;
-    }
-
-    // Метод 5
-    case 5:
+    case 3:
 #pragma omp parallel
     {
 #pragma omp for schedule(static, 1) ordered
